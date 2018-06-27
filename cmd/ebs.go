@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"text/tabwriter"
 
 	"github.com/davyj0nes/ec2-stats/aws/ebs"
 	"github.com/pkg/errors"
@@ -30,8 +31,7 @@ func init() {
 
 func ebsCommand() error {
 	// Initialise ebs Client
-	ebs := ebs.EBS{}
-	ebs.InitClient("eu-west-1")
+	ebs := ebs.New("eu-west-1")
 
 	// Get EBS Volume Information
 	err := ebs.Volumes()
@@ -39,6 +39,17 @@ func ebsCommand() error {
 		return errors.Wrap(err, "Error getting Volume info:")
 	}
 
-	fmt.Println(ebs.EBSVolumes)
+	output(ebs.TextOutput())
 	return nil
+}
+
+func output(data []string) {
+	padding := 3
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, padding, ' ', tabwriter.AlignRight|tabwriter.Debug)
+
+	for _, line := range data {
+		fmt.Fprintln(w, line)
+	}
+
+	w.Flush()
 }

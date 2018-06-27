@@ -1,6 +1,7 @@
 package ebs
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -27,13 +28,12 @@ type EBS struct {
 	EBSVolumes []Volume
 }
 
-// InitClient configures the API client for EC2
-func (ebs *EBS) InitClient(region string) {
-	cfg := &aws.Config{
-		Region: aws.String(region),
-	}
-	sess := session.New(cfg)
-	ebs.client = ec2.New(sess)
+// New creates a pointer to EBS instance with an initialised client
+func New(region string) *EBS {
+	ebs := EBS{}
+	ebs.initClient(region)
+
+	return &ebs
 }
 
 // Volumes gets information about EBS Volumes
@@ -56,6 +56,34 @@ func (ebs *EBS) Volumes() error {
 	ebs.EBSVolumes = filterVolumes(output.Volumes)
 
 	return nil
+}
+
+// TextOutput returns the slice of data about all the EBS Volumes found.
+// output is formatted so it ca be used by tabwriter for better CLI formatting.
+func (ebs *EBS) TextOutput() []string {
+	var output []string
+
+	// add headings to output
+	output = append(output, "ID\tType\tState\tCreated On\t")
+
+	for _, v := range ebs.EBSVolumes {
+		// setting format to DD-MM-YYYY HH:MM:SS
+		timeString := v.Created.Format("02-01-2006 15:04:05")
+
+		output = append(output,
+			fmt.Sprintf("%s\t%s\t%s\t%s\t", v.ID, v.Type, v.State, timeString))
+	}
+
+	return output
+}
+
+// initClient configures the API client for EC2
+func (ebs *EBS) initClient(region string) {
+	cfg := &aws.Config{
+		Region: aws.String(region),
+	}
+	sess := session.New(cfg)
+	ebs.client = ec2.New(sess)
 }
 
 // filterVolumes takes the data from the AWS API and pulls out only what we want
