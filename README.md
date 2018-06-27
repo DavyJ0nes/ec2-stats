@@ -24,4 +24,4 @@ ec2-stats ebs --json
 
 ## License
 
-MIT
+[MIT](./LICENSE)
