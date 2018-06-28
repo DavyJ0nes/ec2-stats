@@ -1,4 +1,7 @@
 # EC2 Stats
+
+> This is still in very early development so isn't super useful at the moment.
+
 [![Go Report Card](https://goreportcard.com/badge/github.com/DavyJ0nes/ec2-stats)](https://goreportcard.com/report/github.com/DavyJ0nes/ec2-stats)
 
 ## Description
