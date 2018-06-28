@@ -39,11 +39,11 @@ func ebsCommand() error {
 		return errors.Wrap(err, "Error getting Volume info:")
 	}
 
-	output(ebs.TextOutput())
+	detailedOutput(ebs.DetailedTextOutput())
 	return nil
 }
 
-func output(data []string) {
+func detailedOutput(data []string) {
 	padding := 3
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, padding, ' ', tabwriter.AlignRight|tabwriter.Debug)
 

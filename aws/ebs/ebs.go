@@ -22,10 +22,19 @@ type Volume struct {
 	Tags    []*ec2.Tag
 }
 
+// Stat describes the statistics about EBS Volumes
+type Stat struct {
+	Region          string
+	Available       int
+	InUse           int
+	OlderThan14Days int
+}
+
 // EBS contains info relating to EBS resources within AWS EC2
 type EBS struct {
 	client     ec2iface.EC2API
 	EBSVolumes []Volume
+	Statistics []Stat
 }
 
 // New creates a pointer to EBS instance with an initialised client
@@ -58,9 +67,9 @@ func (ebs *EBS) Volumes() error {
 	return nil
 }
 
-// TextOutput returns the slice of data about all the EBS Volumes found.
+// DetailedTextOutput returns the slice of data about all the EBS Volumes found.
 // output is formatted so it ca be used by tabwriter for better CLI formatting.
-func (ebs *EBS) TextOutput() []string {
+func (ebs *EBS) DetailedTextOutput() []string {
 	var output []string
 
 	// add headings to output

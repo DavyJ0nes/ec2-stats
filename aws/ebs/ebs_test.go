@@ -1,6 +1,7 @@
 package ebs
 
 import (
+	"reflect"
 	"testing"
 	"time"
 
@@ -75,6 +76,30 @@ func TestVolumes(t *testing.T) {
 	if len(testEBS.EBSVolumes) != 2 {
 		t.Errorf("Error. want: %v, got: %v", 2, len(testEBS.EBSVolumes))
 	}
+}
+
+func TestDetailedTextOutput(t *testing.T) {
+	testEBS := EBS{
+		client: mockEC2{},
+	}
+
+	err := testEBS.Volumes()
+	if err != nil {
+		t.Error("Unexpected Error Occured", err)
+	}
+
+	want := []string{
+		"ID\tType\tState\tCreated On\t",
+		"vol-0123456789abcdefa\tgp2\tin-use\t17-11-2009 20:34:58\t",
+		"vol-0123456789abcdefa\tgp2\tavailable\t17-11-2009 20:34:58\t",
+	}
+
+	got := testEBS.DetailedTextOutput()
+
+	if reflect.DeepEqual(want, got) != true {
+		t.Errorf("Error. want: %v, got: %v", want, got)
+	}
+
 }
 
 // func TestExampleFunction(t *testing.T) {
